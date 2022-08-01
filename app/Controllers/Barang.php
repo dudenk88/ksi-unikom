@@ -21,7 +21,8 @@ class Barang extends BaseController
         $tableHead = ['id_barang', 'nama_barang','stok', 'harga'];
         $barang = $this->barangModel->findAll();
         $dataColumn = ['id_barang', 'nama_barang','stok', 'harga'];
-
+        if ($barang) {
+            
         $message = [
             'title' => 'Kelola Barang',
             'pageName' => 'Kelola data Barang',
@@ -32,6 +33,11 @@ class Barang extends BaseController
             'tableData' => $barang,
             'dataColumn' => $dataColumn
         ];
+
+        } else {
+            $message = ['message' => 'Data Tidak Ditemukan', 'error' => $barang->error()];
+        }
+        
         return $this->setResponseFormat('json')->respond($message, 200);
         
     }
@@ -43,10 +49,13 @@ class Barang extends BaseController
             'harga'    => $this->request->getPost('harga'),
             'stok'    => $this->request->getPost('stok')
         ];
-
-        $this->barangModel->insert($barang);
-
-        $message = ['messasge' => 'Data Berhasil Ditambahkan', 'data' => $barang];
+        
+        $result = $this->barangModel->insert($barang);
+        if ($result) {
+           $message = ['messasge' => 'Data Berhasil Ditambahkan', 'data' => $barang];
+        } else {
+            $message = ['message' => 'Data Tidak Berhasil Ditambahkan', 'error' => $result->error()];
+        }
         return $this->setResponseFormat('json')->respond($message, 200);
     }
 
@@ -59,16 +68,27 @@ class Barang extends BaseController
             'stok'    => $this->request->getPost('stok')
         ];
 
-        $this->barangModel->update($this->request->getPost('id_barang'), $data);
+        $result = $this->barangModel->update($this->request->getPost('id_barang'), $data);
+        if ($result) {
         $message = ['messasge' => 'Data Berhasil Diupdate', 'data' => $data];
+        } else {
+            $message = ['message' => 'Data Tidak Berhasil DIupdate', 'error' => $barang->error()];
+
+        }
+
         return $this->setResponseFormat('json')->respond($message, 200);
     }
 
     public function destroy()
     {
         $id_barang = $this->request->getPost('id_barang');
-        $this->barangModel->delete($id_barang);
+        $result = $this->barangModel->delete($id_barang);
+        if ($result) {
         $message = ['messasge' => 'Data Berhasil Dihapus', 'id_barang' => $id_barang];
+        } else {
+            $message = ['message' => 'Data Tidak Dihapus','id_barang' => $id_barang , 'error' => $barang->error()];
+
+        }
         return $this->setResponseFormat('json')->respond($message, 200);
     }
 }
