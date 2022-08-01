@@ -82,13 +82,14 @@ class Barang extends BaseController
     public function destroy()
     {
         $id_barang = $this->request->getPost('id_barang');
-        $result = $this->barangModel->delete($id_barang);
-        if ($result) {
+    try {
+        $this->barangModel->delete($id_barang);
         $message = ['messasge' => 'Data Berhasil Dihapus', 'id_barang' => $id_barang];
-        } else {
-            $message = ['message' => 'Data Tidak Dihapus','id_barang' => $id_barang , 'error' => $barang->error()];
-
-        }
         return $this->setResponseFormat('json')->respond($message, 200);
+    } catch (\Exception $th) {
+        $message = ['message' => 'Data Tidak Dihapus','id_barang' => $id_barang , 'error' => $barang->error() ,$th];
+        return $this->setResponseFormat('json')->respond($message, 200);
+    }
+       
     }
 }
